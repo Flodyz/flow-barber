@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "init-db": "node src/database/init.js"
+    "init-db": "node src/database/init.js",
+    "start:prod": "NODE_ENV=production node src/server.js"
   },
   "keywords": ["barbearia", "agendamento", "node", "express"],
   "author": "Estudante",

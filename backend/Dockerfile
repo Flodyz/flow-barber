@@ -21,6 +21,8 @@ RUN mkdir -p /app/data
 
 # Modificar caminho do banco para volume persistente
 ENV DB_PATH=/app/data/barbearia.db
+ENV NODE_ENV=production
+ENV PORT=3000
 
 # Expor porta
 EXPOSE 3000
@@ -31,6 +33,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 # Instalar curl para health check
 RUN apk add --no-cache curl
+
+# Garantir permissões no diretório de dados
+RUN chmod 755 /app/data
 
 # Comando de inicialização
 CMD ["npm", "start"]

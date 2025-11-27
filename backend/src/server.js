@@ -32,10 +32,11 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? (origin, callback) => {
-        // Em produção, permitir qualquer origem HTTPS ou localhost
-        if (!origin || origin.startsWith('https://') || origin.startsWith('http://localhost')) {
+        // Em produção, permitir qualquer origem HTTPS, localhost ou requisições sem origin (Coolify)
+        if (!origin || origin.startsWith('https://') || origin.startsWith('http://localhost') || origin.includes('flodydev.site')) {
           callback(null, true);
         } else {
+          console.log('CORS bloqueado para:', origin);
           callback(new Error('Não permitido pelo CORS'));
         }
       }
@@ -88,12 +89,30 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-  console.log(`📱 Ambiente: ${process.env.NODE_ENV}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-});
+// Inicializar banco de dados na inicialização
+const initDatabase = async () => {
+  try {
+    const { initDb } = require('./database/init');
+    await initDb();
+    console.log('✅ Banco de dados inicializado com sucesso');
+  } catch (error) {
+    console.error('❌ Erro ao inicializar banco de dados:', error);
+  }
+};
+
+// Inicializar aplicação
+const startServer = async () => {
+  await initDatabase();
+  
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`📱 Ambiente: ${process.env.NODE_ENV}`);
+    console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  });
+};
+
+startServer();
 
 module.exports = app;
