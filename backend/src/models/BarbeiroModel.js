@@ -1,9 +1,9 @@
-const { createConnection } = require('../database/database');
+const { getConnection } = require('../database/database');
 
 class BarbeiroModel {
   static buscarTodos() {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT b.*, u.nome, u.email, u.ativo,
@@ -30,7 +30,7 @@ class BarbeiroModel {
   
   static buscarPorId(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT b.*, u.nome, u.email, u.ativo
@@ -52,7 +52,7 @@ class BarbeiroModel {
   
   static buscarPorUsuarioId(usuarioId) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT b.*, u.nome, u.email, u.ativo
@@ -74,7 +74,7 @@ class BarbeiroModel {
   
   static buscarDisponiveisData(data, horaInicio, duracao) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       // Calcular hora de fim
       const [horas, minutos] = horaInicio.split(':').map(Number);
@@ -123,7 +123,7 @@ class BarbeiroModel {
   
   static buscarHorariosDisponiveis(barbeiroId, data) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       // Buscar horários do barbeiro
       const barbeiroSql = `
@@ -177,7 +177,7 @@ class BarbeiroModel {
   
   static atualizar(id, barbeiroData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { telefone, especialidades, horario_inicio, horario_fim, dias_trabalho } = barbeiroData;
       
       const sql = `
@@ -200,7 +200,7 @@ class BarbeiroModel {
   
   static buscarEstatisticas(barbeiroId, periodo = 30) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT 

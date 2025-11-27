@@ -1,9 +1,9 @@
-const { createConnection } = require('../database/database');
+const { getConnection } = require('../database/database');
 
 class AgendamentoModel {
   static criar(agendamentoData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { 
         cliente_id, 
         barbeiro_id, 
@@ -66,7 +66,7 @@ class AgendamentoModel {
   
   static buscarTodos() {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT a.*, 
@@ -94,7 +94,7 @@ class AgendamentoModel {
   
   static buscarPorData(data) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT a.*, 
@@ -123,7 +123,7 @@ class AgendamentoModel {
   
   static buscarPorBarbeiro(barbeiroId, data = null) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       let sql = `
         SELECT a.*, 
@@ -157,7 +157,7 @@ class AgendamentoModel {
   
   static verificarDisponibilidade(barbeiroId, data, horaInicio, servicoId, agendamentoIdExcluir = null) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       // Buscar duração do serviço
       const servicoSql = 'SELECT duracao FROM servicos WHERE id = ?';
@@ -222,7 +222,7 @@ class AgendamentoModel {
   
   static buscarPorId(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT a.*, 
@@ -250,7 +250,7 @@ class AgendamentoModel {
   
   static atualizar(id, agendamentoData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { status, observacoes } = agendamentoData;
       
       const sql = `
@@ -272,7 +272,7 @@ class AgendamentoModel {
   
   static cancelar(id, motivo = '') {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const observacoesCancelamento = motivo ? `CANCELADO: ${motivo}` : 'CANCELADO';
       
@@ -295,7 +295,7 @@ class AgendamentoModel {
   
   static buscarProximos(limite = 10) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT a.*, 

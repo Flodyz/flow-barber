@@ -1,9 +1,9 @@
-const { createConnection } = require('../database/database');
+const { getConnection } = require('../database/database');
 
 class ClienteModel {
   static criar(clienteData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { nome, telefone, email, data_nascimento, endereco, observacoes } = clienteData;
       
       const sql = `
@@ -24,7 +24,7 @@ class ClienteModel {
   
   static buscarTodos() {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT c.*, 
@@ -50,7 +50,7 @@ class ClienteModel {
   
   static buscarPorId(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = 'SELECT * FROM clientes WHERE id = ? AND ativo = 1';
       
@@ -67,7 +67,7 @@ class ClienteModel {
   
   static buscarPorNomeOuTelefone(termo) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT * FROM clientes 
@@ -90,7 +90,7 @@ class ClienteModel {
   
   static atualizar(id, clienteData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { nome, telefone, email, data_nascimento, endereco, observacoes } = clienteData;
       
       const sql = `
@@ -113,7 +113,7 @@ class ClienteModel {
   
   static deletar(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       // Soft delete - marca como inativo
       const sql = 'UPDATE clientes SET ativo = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
@@ -131,7 +131,7 @@ class ClienteModel {
   
   static buscarAgendamentos(clienteId) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT a.*, s.nome as servico_nome, s.preco, s.duracao,

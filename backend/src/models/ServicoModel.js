@@ -1,9 +1,9 @@
-const { createConnection } = require('../database/database');
+const { getConnection } = require('../database/database');
 
 class ServicoModel {
   static criar(servicoData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { nome, descricao, preco, duracao } = servicoData;
       
       const sql = `
@@ -24,7 +24,7 @@ class ServicoModel {
   
   static buscarTodos() {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT s.*, 
@@ -50,7 +50,7 @@ class ServicoModel {
   
   static buscarPorId(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1';
       
@@ -67,7 +67,7 @@ class ServicoModel {
   
   static buscarAtivos() {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = 'SELECT * FROM servicos WHERE ativo = 1 ORDER BY nome';
       
@@ -84,7 +84,7 @@ class ServicoModel {
   
   static atualizar(id, servicoData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { nome, descricao, preco, duracao } = servicoData;
       
       const sql = `
@@ -106,7 +106,7 @@ class ServicoModel {
   
   static deletar(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       // Verifica se há agendamentos futuros
       const checkSql = `
@@ -145,7 +145,7 @@ class ServicoModel {
   
   static buscarEstatisticas(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT 

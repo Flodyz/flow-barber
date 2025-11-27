@@ -25,13 +25,14 @@ const createConnection = () => {
 
 // Função para inicializar o banco de dados
 const initDatabase = () => {
-  const db = createConnection();
-  
-  // Habilitar foreign keys
-  db.run('PRAGMA foreign_keys = ON');
-  
-  // Criar tabelas
-  const tables = [
+  return new Promise((resolve, reject) => {
+    const db = createConnection();
+    
+    // Habilitar foreign keys
+    db.run('PRAGMA foreign_keys = ON');
+    
+    // Criar tabelas
+    const tables = [
     // Tabela de usuários (barbeiros/admin)
     `CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -115,18 +116,23 @@ const initDatabase = () => {
     });
   });
   
-  // Aguardar criação das tabelas antes de inserir dados
-  setTimeout(() => {
-    insertInitialData(db);
-    
-    db.close((err) => {
-      if (err) {
-        console.error('❌ Erro ao fechar o banco:', err.message);
-      } else {
-        console.log('✅ Conexão com banco fechada');
-      }
-    });
-  }, 1000);
+    // Aguardar criação das tabelas antes de inserir dados
+    setTimeout(() => {
+      insertInitialData(db);
+      
+      // Não fechar a conexão, apenas resolver a promise
+      setTimeout(() => {
+        db.close((err) => {
+          if (err) {
+            console.error('❌ Erro ao fechar conexão de inicialização:', err.message);
+          } else {
+            console.log('✅ Inicialização do banco concluída');
+          }
+          resolve();
+        });
+      }, 500);
+    }, 1000);
+  });
 };
 
 // Função para inserir dados iniciais
@@ -217,8 +223,16 @@ const insertInitialData = (db) => {
   });
 };
 
+// Função para obter conexão para operações da API
+const getConnection = () => {
+  const db = createConnection();
+  db.run('PRAGMA foreign_keys = ON');
+  return db;
+};
+
 module.exports = {
   createConnection,
   initDatabase,
+  getConnection,
   DB_PATH
 };

@@ -1,10 +1,10 @@
-const { createConnection } = require('../database/database');
+const { getConnection } = require('../database/database');
 const bcrypt = require('bcryptjs');
 
 class UsuarioModel {
   static async buscarPorEmail(email) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT u.*, b.id as barbeiro_id
@@ -26,7 +26,7 @@ class UsuarioModel {
   
   static async criar(usuarioData) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       const { nome, email, senha, tipo } = usuarioData;
       
       // Hash da senha
@@ -59,7 +59,7 @@ class UsuarioModel {
   
   static async buscarPorId(id) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const sql = `
         SELECT u.*, b.id as barbeiro_id
@@ -81,7 +81,7 @@ class UsuarioModel {
   
   static async atualizarSenha(id, novaSenha) {
     return new Promise((resolve, reject) => {
-      const db = createConnection();
+      const db = getConnection();
       
       const senhaHash = bcrypt.hashSync(novaSenha, 10);
       
