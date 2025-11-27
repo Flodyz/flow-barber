@@ -1,0 +1,28 @@
+{
+  "name": "barbearia-backend",
+  "version": "1.0.0",
+  "description": "Backend para sistema de gerenciamento de barbearia",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "init-db": "node src/database/init.js"
+  },
+  "keywords": ["barbearia", "agendamento", "node", "express"],
+  "author": "Estudante",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.6",
+    "dotenv": "^16.3.1",
+    "express-rate-limit": "^6.10.0",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
