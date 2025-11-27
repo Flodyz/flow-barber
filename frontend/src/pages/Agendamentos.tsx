@@ -24,8 +24,7 @@ export function Agendamentos() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
-    watch
+    reset
   } = useForm<AgendamentoFormData>();
 
   // Carregar dados iniciais
@@ -129,39 +128,7 @@ export function Agendamentos() {
     }
   };
 
-  // Verificar se o horário está disponível
-  const verificarDisponibilidade = async (data: string, horario: string, barbeiroId: number) => {
-    try {
-      const disponivel = await agendamentoService.verificarDisponibilidade(data, horario, barbeiroId);
-      return disponivel;
-    } catch (error) {
-      console.error('Erro ao verificar disponibilidade:', error);
-      return false;
-    }
-  };
 
-  // Formatar data e hora
-  const formatDateTime = (dateTime: string) => {
-    const date = new Date(dateTime);
-    return {
-      date: date.toLocaleDateString('pt-BR'),
-      time: date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    };
-  };
-
-  // Obter cor do status
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'agendado':
-        return 'bg-blue-900 text-blue-200';
-      case 'concluido':
-        return 'bg-green-900 text-green-200';
-      case 'cancelado':
-        return 'bg-red-900 text-red-200';
-      default:
-        return 'bg-gray-900 text-gray-200';
-    }
-  };
 
   // Obter ícone do status
   const getStatusIcon = (status: string) => {
@@ -306,23 +273,23 @@ export function Agendamentos() {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center text-silver-700">
                         <User className="h-4 w-4 mr-2 text-silver-600" />
-                        <span className="text-sm">{agendamento.cliente?.nome}</span>
+                        <span className="text-sm">{agendamento.cliente?.nome || agendamento.cliente_nome}</span>
                       </div>
                       
                       <div className="flex items-center text-silver-700">
                         <Scissors className="h-4 w-4 mr-2 text-silver-600" />
-                        <span className="text-sm">{agendamento.servico?.nome}</span>
+                        <span className="text-sm">{agendamento.servico?.nome || agendamento.servico_nome}</span>
                       </div>
                       
                       <div className="flex items-center text-silver-700">
                         <Clock className="h-4 w-4 mr-2 text-silver-600" />
-                        <span className="text-sm">com {agendamento.barbeiro?.nome}</span>
+                        <span className="text-sm">com {agendamento.barbeiro?.nome || agendamento.barbeiro_nome}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-silver-300">
                       <span className="text-lg font-semibold text-green-600">
-                        R$ {agendamento.servico?.preco.toFixed(2)}
+                        R$ {(agendamento.servico?.preco || agendamento.preco || 0).toFixed(2)}
                       </span>
                       
                       <div className="flex space-x-2">
@@ -382,7 +349,7 @@ export function Agendamentos() {
                         Cliente *
                       </label>
                       <select
-                        {...register('clienteId', { required: 'Cliente é obrigatório' })}
+                        {...register('cliente_id', { required: 'Cliente é obrigatório', valueAsNumber: true })}
                         className="input-field w-full"
                       >
                         <option value="">Selecione um cliente</option>
@@ -392,8 +359,8 @@ export function Agendamentos() {
                           </option>
                         ))}
                       </select>
-                      {errors.clienteId && (
-                        <p className="mt-1 text-sm text-red-500">{errors.clienteId.message}</p>
+                      {errors.cliente_id && (
+                        <p className="mt-1 text-sm text-red-500">{errors.cliente_id.message}</p>
                       )}
                     </div>
 
@@ -403,7 +370,7 @@ export function Agendamentos() {
                         Serviço *
                       </label>
                       <select
-                        {...register('servicoId', { required: 'Serviço é obrigatório' })}
+                        {...register('servico_id', { required: 'Serviço é obrigatório', valueAsNumber: true })}
                         className="input-field w-full"
                       >
                         <option value="">Selecione um serviço</option>
@@ -413,8 +380,8 @@ export function Agendamentos() {
                           </option>
                         ))}
                       </select>
-                      {errors.servicoId && (
-                        <p className="mt-1 text-sm text-red-500">{errors.servicoId.message}</p>
+                      {errors.servico_id && (
+                        <p className="mt-1 text-sm text-red-500">{errors.servico_id.message}</p>
                       )}
                     </div>
 
@@ -424,7 +391,7 @@ export function Agendamentos() {
                         Barbeiro *
                       </label>
                       <select
-                        {...register('barbeiroId', { required: 'Barbeiro é obrigatório' })}
+                        {...register('barbeiro_id', { required: 'Barbeiro é obrigatório', valueAsNumber: true })}
                         className="input-field w-full"
                       >
                         <option value="">Selecione um barbeiro</option>
@@ -434,8 +401,8 @@ export function Agendamentos() {
                           </option>
                         ))}
                       </select>
-                      {errors.barbeiroId && (
-                        <p className="mt-1 text-sm text-red-500">{errors.barbeiroId.message}</p>
+                      {errors.barbeiro_id && (
+                        <p className="mt-1 text-sm text-red-500">{errors.barbeiro_id.message}</p>
                       )}
                     </div>
 
@@ -445,23 +412,23 @@ export function Agendamentos() {
                         Data *
                       </label>
                       <input
-                        {...register('dataAgendamento', { required: 'Data é obrigatória' })}
+                        {...register('data_agendamento', { required: 'Data é obrigatória' })}
                         type="date"
                         min={new Date().toISOString().split('T')[0]}
                         className="input-field w-full"
                       />
-                      {errors.dataAgendamento && (
-                        <p className="mt-1 text-sm text-red-400">{errors.dataAgendamento.message}</p>
+                      {errors.data_agendamento && (
+                        <p className="mt-1 text-sm text-red-500">{errors.data_agendamento.message}</p>
                       )}
                     </div>
 
                     {/* Horário */}
                     <div>
-                      <label className="block text-sm font-medium text-silver-200 mb-1">
+                      <label className="block text-sm font-medium text-primary-900 mb-1">
                         Horário *
                       </label>
                       <select
-                        {...register('horarioAgendamento', { required: 'Horário é obrigatório' })}
+                        {...register('hora_inicio', { required: 'Horário é obrigatório' })}
                         className="input-field w-full"
                       >
                         <option value="">Selecione um horário</option>
@@ -471,8 +438,8 @@ export function Agendamentos() {
                           </option>
                         ))}
                       </select>
-                      {errors.horarioAgendamento && (
-                        <p className="mt-1 text-sm text-red-400">{errors.horarioAgendamento.message}</p>
+                      {errors.hora_inicio && (
+                        <p className="mt-1 text-sm text-red-500">{errors.hora_inicio.message}</p>
                       )}
                     </div>
 
@@ -528,21 +495,21 @@ export function Agendamentos() {
                 <div className="space-y-4">
                   <div>
                     <span className="text-sm text-silver-600">Cliente:</span>
-                    <p className="text-primary-900">{selectedAgendamento.cliente?.nome}</p>
-                    <p className="text-sm text-silver-700">{selectedAgendamento.cliente?.telefone}</p>
+                    <p className="text-primary-900">{selectedAgendamento.cliente?.nome || selectedAgendamento.cliente_nome}</p>
+                    <p className="text-sm text-silver-700">{selectedAgendamento.cliente?.telefone || selectedAgendamento.cliente_telefone}</p>
                   </div>
 
                   <div>
                     <span className="text-sm text-silver-600">Serviço:</span>
-                    <p className="text-primary-900">{selectedAgendamento.servico?.nome}</p>
+                    <p className="text-primary-900">{selectedAgendamento.servico?.nome || selectedAgendamento.servico_nome}</p>
                     <p className="text-sm text-silver-700">
-                      R$ {selectedAgendamento.servico?.preco.toFixed(2)} - {selectedAgendamento.servico?.duracao} min
+                      R$ {(selectedAgendamento.servico?.preco || selectedAgendamento.preco || 0).toFixed(2)} - {selectedAgendamento.servico?.duracao || selectedAgendamento.duracao} min
                     </p>
                   </div>
 
                   <div>
                     <span className="text-sm text-silver-600">Barbeiro:</span>
-                    <p className="text-primary-900">{selectedAgendamento.barbeiro?.nome}</p>
+                    <p className="text-primary-900">{selectedAgendamento.barbeiro?.nome || selectedAgendamento.barbeiro_nome}</p>
                   </div>
 
                   <div>

@@ -122,6 +122,10 @@ export interface Agendamento {
   servico_nome?: string;
   duracao?: number;
   preco?: number;
+  // Objetos relacionados completos (quando incluídos via populate/join)
+  cliente?: Cliente;
+  barbeiro?: Barbeiro;
+  servico?: Servico;
   created_at: string;
   updated_at: string;
 }
