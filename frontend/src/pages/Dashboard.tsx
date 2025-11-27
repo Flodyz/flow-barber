@@ -17,7 +17,7 @@ import { agendamentoService } from '../services/agendamentoService';
 import { clienteService } from '../services/clienteService';
 import { servicoService } from '../services/servicoService';
 import { barbeiroService } from '../services/barbeiroService';
-import type { Agendamento, Cliente, Servico, Barbeiro } from '../types';
+import type { Agendamento } from '../types';
 
 interface DashboardStats {
   totalClientes: number;

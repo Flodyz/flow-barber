@@ -38,6 +38,17 @@ export const barbeiroService = {
     return response.data.data;
   },
 
+  // Criar novo barbeiro
+  async criar(dados: BarbeiroFormData): Promise<Barbeiro> {
+    const response = await api.post<ApiResponse<Barbeiro>>('/barbeiros', dados);
+    return response.data.data;
+  },
+
+  // Deletar barbeiro
+  async deletar(id: number): Promise<void> {
+    await api.delete(`/barbeiros/${id}`);
+  },
+
   // Buscar estatísticas do barbeiro
   async buscarEstatisticas(id: number, periodo = 30) {
     const response = await api.get(`/barbeiros/${id}/estatisticas?periodo=${periodo}`);

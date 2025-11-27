@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Plus, Edit2, Trash2, User, Phone, Mail, MapPin, Scissors, Award } from 'lucide-react';
+import { Plus, Edit2, Trash2, User, Phone, Mail, MapPin, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { barbeiroService } from '../services/barbeiroService';
 import { useAuth } from '../contexts/AuthContext';
-import type { Barbeiro, BarbeiroFormData } from '../types';
+import type { Barbeiro, BarbeiroCompleteFormData } from '../types';
 
 export function Barbeiros() {
   const { usuario } = useAuth();
@@ -19,7 +19,7 @@ export function Barbeiros() {
     formState: { errors, isSubmitting },
     reset,
     setValue
-  } = useForm<BarbeiroFormData>();
+  } = useForm<BarbeiroCompleteFormData>();
 
   // Verificar se é admin
   const isAdmin = usuario?.tipo === 'admin';
@@ -71,7 +71,7 @@ export function Barbeiros() {
   };
 
   // Salvar barbeiro (criar ou atualizar)
-  const onSubmit = async (data: BarbeiroFormData) => {
+  const onSubmit = async (data: BarbeiroCompleteFormData) => {
     try {
       if (editingBarbeiro) {
         await barbeiroService.atualizar(editingBarbeiro.id, data);

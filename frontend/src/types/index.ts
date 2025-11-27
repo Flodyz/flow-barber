@@ -81,6 +81,7 @@ export interface Barbeiro {
   nome: string;
   email: string;
   telefone?: string;
+  endereco?: string;
   especialidades?: string;
   horario_inicio: string;
   horario_fim: string;
@@ -93,11 +94,27 @@ export interface Barbeiro {
 }
 
 export interface BarbeiroFormData {
+  nome?: string;
+  email?: string;
   telefone?: string;
+  endereco?: string;
   especialidades?: string;
   horario_inicio?: string;
   horario_fim?: string;
   dias_trabalho?: string;
+  ativo?: boolean;
+}
+
+export interface BarbeiroCompleteFormData {
+  nome: string;
+  email?: string;
+  telefone?: string;
+  endereco?: string;
+  especialidades?: string;
+  horario_inicio?: string;
+  horario_fim?: string;
+  dias_trabalho?: string;
+  ativo?: boolean;
 }
 
 // Tipos do agendamento
