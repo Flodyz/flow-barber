@@ -36,6 +36,7 @@ class AuthController {
       }
       
       // Gerar token JWT
+      const jwtSecret = process.env.JWT_SECRET || 'fallback_secret_for_development_only';
       const token = jwt.sign(
         { 
           id: usuario.id, 
@@ -43,7 +44,7 @@ class AuthController {
           tipo: usuario.tipo,
           barbeiro_id: usuario.barbeiro_id 
         },
-        process.env.JWT_SECRET,
+        jwtSecret,
         { expiresIn: '24h' }
       );
       
@@ -94,6 +95,7 @@ class AuthController {
       const { usuario } = req; // Vem do middleware de autenticação
       
       // Gerar novo token
+      const jwtSecret = process.env.JWT_SECRET || 'fallback_secret_for_development_only';
       const novoToken = jwt.sign(
         { 
           id: usuario.id, 
@@ -101,7 +103,7 @@ class AuthController {
           tipo: usuario.tipo,
           barbeiro_id: usuario.barbeiro_id 
         },
-        process.env.JWT_SECRET,
+        jwtSecret,
         { expiresIn: '24h' }
       );
       

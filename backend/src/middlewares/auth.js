@@ -15,7 +15,8 @@ const authenticateToken = async (req, res, next) => {
     }
     
     // Verificar token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const jwtSecret = process.env.JWT_SECRET || 'fallback_secret_for_development_only';
+    const decoded = jwt.verify(token, jwtSecret);
     
     // Buscar usuário atualizado
     const usuario = await UsuarioModel.buscarPorId(decoded.id);

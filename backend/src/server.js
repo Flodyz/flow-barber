@@ -15,8 +15,8 @@ const app = express();
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100 // Limite de 100 requests por IP
+  windowMs: 60 * 60 * 1000, // 60 minutos
+  max: 20000 // Limite de 20000 requests por IP
 });
 
 // Middlewares de segurança
