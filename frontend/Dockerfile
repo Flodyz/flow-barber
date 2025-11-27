@@ -28,5 +28,12 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Expor porta
 EXPOSE 80
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:80/health || exit 1
+
+# Instalar curl para health check
+RUN apk add --no-cache curl
+
 # Comando de inicialização
 CMD ["nginx", "-g", "daemon off;"]
