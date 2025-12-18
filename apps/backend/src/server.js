@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -13,16 +14,32 @@ const barbeiroRoutes = require('./routes/barbeiroRoutes');
 
 const app = express();
 
-// Rate limiting
+// Compressão de respostas
+app.use(compression());
+
+// Rate limiting otimizado
 const limiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 minutos
-  max: 20000 // Limite de 20000 requests por IP
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 1000, // 1000 requests por IP a cada 15 min
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path === '/health' // Skip health checks
 });
 
 // Middlewares de segurança
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Desabilitar para APIs
+}));
 app.use(limiter);
-app.use(morgan('combined'));
+
+// Logger otimizado
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined', {
+    skip: (req, res) => res.statusCode < 400 // Apenas erros em produção
+  }));
+} else {
+  app.use(morgan('dev'));
+}
 
 // CORS configurado para o frontend
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
@@ -46,7 +63,22 @@ app.use(cors({
 
 // Middleware para parsing JSON
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Cache headers para rotas de consulta (GET)
+app.use((req, res, next) => {
+  if (req.method === 'GET') {
+    res.set('Cache-Control', 'public, max-age=60'); // Cache de 60 segundos para GETs
+  } else {
+    res.set('Cache-Control', 'no-store');
+  }
+  next();
+});
 
 // Rotas da API
 app.use('/api/auth', authRoutes);
@@ -91,20 +123,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-// Inicializar banco de dados na inicialização
-const initDatabase = async () => {
-  try {
-    const { initDb } = require('./database/init');
-    await initDb();
-    console.log('✅ Banco de dados inicializado com sucesso');
-  } catch (error) {
-    console.error('❌ Erro ao inicializar banco de dados:', error);
-  }
-};
-
 // Inicializar aplicação
 const startServer = async () => {
-  await initDatabase();
   
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);

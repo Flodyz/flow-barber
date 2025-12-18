@@ -4,8 +4,14 @@ npm-debug.log
 .gitignore
 README.md
 .env
+.env.local
+.env.development
 .nyc_output
 coverage
 .vscode
 .DS_Store
 *.log
+*.db
+*.sqlite
+prisma/migrations/
+MIGRACAO_POSTGRESQL.md

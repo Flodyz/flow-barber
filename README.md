@@ -42,7 +42,8 @@ Sistema completo para gerenciamento de barbearia desenvolvido como projeto acad�
 ### Backend
 - **Node.js** - Runtime JavaScript
 - **Express** - Framework web
-- **SQLite3** - Banco de dados
+- **PostgreSQL** - Banco de dados relacional
+- **Prisma** - ORM moderno para Node.js
 - **JWT** - Autenticação
 - **bcryptjs** - Criptografia de senhas
 - **CORS** - Controle de acesso
@@ -60,10 +61,22 @@ Sistema completo para gerenciamento de barbearia desenvolvido como projeto acad�
 - **Lucide React** - Ícones
 - **Date-fns** - Manipulação de datas
 
+## � Migração para PostgreSQL + Prisma
+
+Este projeto foi recentemente migrado de **SQLite** para **PostgreSQL** com **Prisma ORM** para melhor escalabilidade e performance.
+
+### ✨ Benefícios da Migração:
+- ✅ Type-safety completo com Prisma
+- ✅ Melhor performance e concorrência
+- ✅ Migrations versionadas
+- ✅ Prisma Studio (GUI para visualizar dados)
+- ✅ Pronto para produção
+
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
-- Node.js 16+ instalado
+- Node.js 18+ instalado
+- Docker (ou PostgreSQL 15+)
 - npm ou yarn
 
 ### 1. Clonar o repositório
@@ -72,27 +85,31 @@ git clone <url-do-repositorio>
 cd trabalho-barbearia
 ```
 
-### 2. Configurar o Backend
+### 2. Configurar o Backend (NOVO - com PostgreSQL)
 
 ```bash
-cd backend
+cd apps/backend
 
-# Instalar dependências
+# Opção 1: Script Automatizado (Recomendado)
+.\setup.ps1
+
+# Opção 2: Manual
 npm install
-
-# Inicializar o banco de dados
-npm run init-db
-
-# Iniciar o servidor em modo de desenvolvimento
-npm run dev
+docker-compose up -d postgres  # Subir PostgreSQL
+npm run prisma:generate        # Gerar Prisma Client
+npm run prisma:migrate         # Criar banco e tabelas
+npm run prisma:seed            # Popular dados iniciais
+npm run dev                    # Iniciar servidor
 ```
 
-O backend estará rodando em `http://localhost:3001`
+O backend estará rodando em `http://localhost:3000`
+
+**🔍 Visualizar dados:** Execute `npm run prisma:studio` e acesse http://localhost:5555
 
 ### 3. Configurar o Frontend
 
 ```bash
-cd frontend
+cd apps/frontend
 
 # Instalar dependências
 npm install

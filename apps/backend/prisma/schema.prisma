@@ -1,0 +1,147 @@
+// Schema Prisma - Barbearia Backend
+// Provider: PostgreSQL
+// Gerado em: 2024-12-18
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+/// Tabela de usuários do sistema (barbeiros e administradores)
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nome      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(100)
+  senha     String   @db.VarChar(255)
+  tipo      TipoUsuario @default(BARBEIRO)
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  barbeiro  Barbeiro?
+
+  @@index([email])
+  @@index([ativo])
+  @@index([tipo])
+  @@map("usuarios")
+}
+
+/// Tabela de barbeiros (informações profissionais)
+model Barbeiro {
+  id              Int      @id @default(autoincrement())
+  usuarioId       Int      @unique @map("usuario_id")
+  telefone        String?  @db.VarChar(15)
+  especialidades  String?  @db.Text
+  horarioInicio   String   @default("08:00") @map("horario_inicio") @db.VarChar(5)
+  horarioFim      String   @default("18:00") @map("horario_fim") @db.VarChar(5)
+  diasTrabalho    String   @default("1,2,3,4,5,6") @map("dias_trabalho") @db.Text // 0=domingo, 1=segunda...
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  usuario         Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  agendamentos    Agendamento[]
+
+  @@map("barbeiros")
+}
+
+/// Tabela de clientes
+model Cliente {
+  id              Int       @id @default(autoincrement())
+  nome            String    @db.VarChar(100)
+  telefone        String    @db.VarChar(15)
+  email           String?   @db.VarChar(100)
+  dataNascimento  DateTime? @map("data_nascimento") @db.Date
+  endereco        String?   @db.Text
+  observacoes     String?   @db.Text
+  ativo           Boolean   @default(true)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  agendamentos    Agendamento[]
+
+  @@index([telefone])
+  @@index([email])
+  @@index([nome])
+  @@index([ativo])
+  @@map("clientes")
+}
+
+/// Tabela de serviços oferecidos
+model Servico {
+  id          Int       @id @default(autoincrement())
+  nome        String    @db.VarChar(100)
+  descricao   String?   @db.Text
+  preco       Decimal   @db.Decimal(10, 2)
+  duracao     Int       // duração em minutos
+  ativo       Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  agendamentos Agendamento[]
+
+  @@index([ativo])
+  @@index([nome])
+  @@map("servicos")
+}
+
+/// Tabela de agendamentos
+model Agendamento {
+  id                Int       @id @default(autoincrement())
+  clienteId         Int       @map("cliente_id")
+  barbeiroId        Int       @map("barbeiro_id")
+  servicoId         Int       @map("servico_id")
+  dataAgendamento   DateTime  @map("data_agendamento") @db.Date
+  horaInicio        String    @map("hora_inicio") @db.VarChar(5)
+  horaFim           String    @map("hora_fim") @db.VarChar(5)
+  status            StatusAgendamento @default(AGENDADO)
+  valorTotal        Decimal?  @map("valor_total") @db.Decimal(10, 2)
+  observacoes       String?   @db.Text
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  cliente   Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  barbeiro  Barbeiro @relation(fields: [barbeiroId], references: [id], onDelete: Cascade)
+  servico   Servico  @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+
+  @@index([dataAgendamento])
+  @@index([barbeiroId])
+  @@index([clienteId])
+  @@index([status])
+  @@index([dataAgendamento, barbeiroId])
+  @@index([dataAgendamento, status])
+  @@map("agendamentos")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum TipoUsuario {
+  ADMIN
+  BARBEIRO
+
+  @@map("tipo_usuario")
+}
+
+enum StatusAgendamento {
+  AGENDADO       @map("agendado")
+  CONFIRMADO     @map("confirmado")
+  EM_ANDAMENTO   @map("em_andamento")
+  CONCLUIDO      @map("concluido")
+  CANCELADO      @map("cancelado")
+
+  @@map("status_agendamento")
+}

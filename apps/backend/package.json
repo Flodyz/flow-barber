@@ -1,0 +1,43 @@
+{
+  "name": "barbearia-backend",
+  "version": "1.0.0",
+  "description": "Backend para sistema de gerenciamento de barbearia",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "node prisma/seed.js",
+    "start:prod": "NODE_ENV=production node src/server.js"
+  },
+  "keywords": [
+    "barbearia",
+    "agendamento",
+    "node",
+    "express"
+  ],
+  "author": "Estudante",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.8.0",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.10.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "prisma": "^5.8.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
