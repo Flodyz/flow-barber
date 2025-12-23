@@ -138,11 +138,70 @@ class BarbeiroController {
     }
   }
   
+  // Criar novo barbeiro
+  static async criar(req, res) {
+    try {
+      const { nome, email, telefone, especialidades, horario_inicio, horario_fim, dias_trabalho, senha, ativo } = req.body;
+      
+      // Validações básicas
+      if (!nome) {
+        return res.status(400).json({
+          error: 'Dados obrigatórios não fornecidos',
+          message: 'Nome é obrigatório'
+        });
+      }
+      
+      // Validar horários se fornecidos
+      if (horario_inicio || horario_fim) {
+        const horaRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        
+        if (horario_inicio && !horaRegex.test(horario_inicio)) {
+          return res.status(400).json({
+            error: 'Horário de início inválido',
+            message: 'Horário deve estar no formato HH:MM'
+          });
+        }
+        
+        if (horario_fim && !horaRegex.test(horario_fim)) {
+          return res.status(400).json({
+            error: 'Horário de fim inválido',
+            message: 'Horário deve estar no formato HH:MM'
+          });
+        }
+      }
+      
+      const barbeiro = await BarbeiroModel.criar({
+        nome,
+        email,
+        telefone,
+        especialidades,
+        horario_inicio,
+        horario_fim,
+        dias_trabalho,
+        senha,
+        ativo
+      });
+      
+      res.status(201).json({
+        success: true,
+        data: barbeiro,
+        message: 'Barbeiro criado com sucesso'
+      });
+      
+    } catch (error) {
+      console.error('Erro ao criar barbeiro:', error);
+      res.status(500).json({
+        error: 'Erro interno do servidor',
+        message: error.message
+      });
+    }
+  }
+  
   // Atualizar dados do barbeiro
   static async atualizar(req, res) {
     try {
       const { id } = req.params;
-      const { telefone, especialidades, horario_inicio, horario_fim, dias_trabalho } = req.body;
+      const { nome, email, telefone, especialidades, horario_inicio, horario_fim, dias_trabalho, ativo } = req.body;
       
       // Validar horários se fornecidos
       if (horario_inicio || horario_fim) {
@@ -175,11 +234,14 @@ class BarbeiroController {
       }
       
       const barbeiro = await BarbeiroModel.atualizar(id, {
+        nome,
+        email,
         telefone,
         especialidades,
         horario_inicio,
         horario_fim,
-        dias_trabalho
+        dias_trabalho,
+        ativo
       });
       
       if (barbeiro.changes === 0) {
@@ -197,6 +259,41 @@ class BarbeiroController {
       
     } catch (error) {
       console.error('Erro ao atualizar barbeiro:', error);
+      res.status(500).json({
+        error: 'Erro interno do servidor',
+        message: error.message
+      });
+    }
+  }
+  
+  // Deletar barbeiro
+  static async deletar(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const resultado = await BarbeiroModel.deletar(id);
+      
+      if (resultado.changes === 0) {
+        return res.status(404).json({
+          error: 'Barbeiro não encontrado',
+          message: 'Nenhum barbeiro encontrado com este ID'
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: 'Barbeiro removido com sucesso'
+      });
+      
+    } catch (error) {
+      if (error.message.includes('agendamentos futuros')) {
+        return res.status(400).json({
+          error: 'Não é possível excluir',
+          message: error.message
+        });
+      }
+      
+      console.error('Erro ao deletar barbeiro:', error);
       res.status(500).json({
         error: 'Erro interno do servidor',
         message: error.message

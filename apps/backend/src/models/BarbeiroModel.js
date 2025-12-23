@@ -195,10 +195,73 @@ class BarbeiroModel {
     }
   }
   
+  static async criar(barbeiroData) {
+    try {
+      const { nome, email, telefone, especialidades, horario_inicio, horario_fim, dias_trabalho, senha, ativo = true } = barbeiroData;
+      
+      // Criar usuário primeiro
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash(senha || 'barbeiro123', 10);
+      
+      const usuario = await prisma.usuario.create({
+        data: {
+          nome,
+          email: email || `barbeiro${Date.now()}@barbearia.com`,
+          senha: hashedPassword,
+          tipo: 'BARBEIRO',
+          ativo
+        }
+      });
+      
+      // Criar barbeiro
+      const barbeiro = await prisma.barbeiro.create({
+        data: {
+          usuarioId: usuario.id,
+          telefone,
+          especialidades,
+          horarioInicio: horario_inicio || '08:00',
+          horarioFim: horario_fim || '18:00',
+          diasTrabalho: dias_trabalho || '1,2,3,4,5,6' // Seg-Sab por padrão
+        },
+        include: {
+          usuario: {
+            select: { nome: true, email: true, ativo: true }
+          }
+        }
+      });
+      
+      return {
+        id: barbeiro.id,
+        nome: barbeiro.usuario.nome,
+        email: barbeiro.usuario.email,
+        telefone: barbeiro.telefone,
+        especialidades: barbeiro.especialidades,
+        horario_inicio: barbeiro.horarioInicio,
+        horario_fim: barbeiro.horarioFim,
+        dias_trabalho: barbeiro.diasTrabalho,
+        ativo: barbeiro.usuario.ativo,
+        usuario_id: barbeiro.usuarioId
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  
   static async atualizar(id, barbeiroData) {
     try {
-      const { telefone, especialidades, horario_inicio, horario_fim, dias_trabalho } = barbeiroData;
+      const { nome, email, telefone, especialidades, horario_inicio, horario_fim, dias_trabalho, ativo } = barbeiroData;
       
+      // Buscar barbeiro para pegar o usuarioId
+      const barbeiroExistente = await prisma.barbeiro.findUnique({
+        where: { id: parseInt(id) },
+        select: { usuarioId: true }
+      });
+      
+      if (!barbeiroExistente) {
+        return { id, changes: 0 };
+      }
+      
+      // Atualizar barbeiro
       const barbeiro = await prisma.barbeiro.update({
         where: { id: parseInt(id) },
         data: {
@@ -209,12 +272,64 @@ class BarbeiroModel {
           diasTrabalho: dias_trabalho
         }
       });
+      
+      // Atualizar usuário se nome, email ou ativo foram fornecidos
+      if (nome || email || ativo !== undefined) {
+        await prisma.usuario.update({
+          where: { id: barbeiroExistente.usuarioId },
+          data: {
+            ...(nome && { nome }),
+            ...(email && { email }),
+            ...(ativo !== undefined && { ativo })
+          }
+        });
+      }
 
       return { id: barbeiro.id, ...barbeiroData, changes: 1 };
     } catch (error) {
       if (error.code === 'P2025') {
         return { id, changes: 0 };
       }
+      throw error;
+    }
+  }
+  
+  static async deletar(id) {
+    try {
+      // Verificar se tem agendamentos futuros
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      
+      const agendamentosFuturos = await prisma.agendamento.count({
+        where: {
+          barbeiroId: parseInt(id),
+          dataAgendamento: { gte: hoje },
+          status: { not: 'CANCELADO' }
+        }
+      });
+      
+      if (agendamentosFuturos > 0) {
+        throw new Error('Não é possível excluir barbeiro com agendamentos futuros. Cancele os agendamentos primeiro.');
+      }
+      
+      // Buscar usuarioId antes de deletar
+      const barbeiro = await prisma.barbeiro.findUnique({
+        where: { id: parseInt(id) },
+        select: { usuarioId: true }
+      });
+      
+      if (!barbeiro) {
+        return { changes: 0 };
+      }
+      
+      // Soft delete: desativar usuário ao invés de deletar
+      await prisma.usuario.update({
+        where: { id: barbeiro.usuarioId },
+        data: { ativo: false }
+      });
+      
+      return { changes: 1 };
+    } catch (error) {
       throw error;
     }
   }

@@ -52,6 +52,11 @@ export const agendamentoService = {
   async cancelar(id: number, motivo?: string): Promise<void> {
     await api.patch(`/agendamentos/${id}/cancelar`, { motivo });
   },
+  
+  // Deletar agendamento
+  async deletar(id: number): Promise<void> {
+    await api.delete(`/agendamentos/${id}`);
+  },
 
   // Verificar disponibilidade
   async verificarDisponibilidade(

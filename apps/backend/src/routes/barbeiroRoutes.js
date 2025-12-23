@@ -15,7 +15,10 @@ router.get('/:id', BarbeiroController.buscarPorId);
 router.get('/:id/horarios-disponiveis', BarbeiroController.buscarHorariosDisponiveis);
 
 // Rotas de modificação (apenas admin ou próprio barbeiro)
+const { requireAdmin } = require('../middlewares/auth');
+router.post('/', requireAdmin, BarbeiroController.criar);
 router.put('/:id', requireAdminOrOwnBarbeiro, BarbeiroController.atualizar);
+router.delete('/:id', requireAdmin, BarbeiroController.deletar);
 router.get('/:id/estatisticas', requireAdminOrOwnBarbeiro, BarbeiroController.buscarEstatisticas);
 
 module.exports = router;

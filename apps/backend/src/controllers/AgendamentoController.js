@@ -317,6 +317,34 @@ class AgendamentoController {
       });
     }
   }
+  
+  // Deletar agendamento
+  static async deletar(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const resultado = await AgendamentoModel.deletar(id);
+      
+      if (resultado.changes === 0) {
+        return res.status(404).json({
+          error: 'Agendamento não encontrado',
+          message: 'Nenhum agendamento encontrado com este ID'
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: 'Agendamento excluído com sucesso'
+      });
+      
+    } catch (error) {
+      console.error('Erro ao deletar agendamento:', error);
+      res.status(500).json({
+        error: 'Erro interno do servidor',
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = AgendamentoController;

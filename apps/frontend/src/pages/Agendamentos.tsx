@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Plus, Calendar, Clock, User, Scissors, Filter, Eye, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Plus, Calendar, Clock, User, Scissors, Filter, Eye, CheckCircle, XCircle, AlertCircle, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { agendamentoService } from '../services/agendamentoService';
 import { clienteService } from '../services/clienteService';
@@ -86,6 +86,23 @@ export function Agendamentos() {
     } catch (error: any) {
       console.error('Erro ao atualizar status:', error);
       const message = error.response?.data?.message || 'Erro ao atualizar status';
+      toast.error(message);
+    }
+  };
+  
+  // Deletar agendamento
+  const handleDeletarAgendamento = async (agendamento: Agendamento) => {
+    if (!confirm(`Tem certeza que deseja excluir o agendamento de ${agendamento.cliente_nome}?`)) {
+      return;
+    }
+
+    try {
+      await agendamentoService.deletar(agendamento.id);
+      toast.success('Agendamento excluído com sucesso!');
+      carregarDados();
+    } catch (error: any) {
+      console.error('Erro ao deletar agendamento:', error);
+      const message = error.response?.data?.message || 'Erro ao excluir agendamento';
       toast.error(message);
     }
   };
@@ -301,6 +318,7 @@ export function Agendamentos() {
                           <Eye className="h-4 w-4" />
                         </button>
                         
+                        {/* Botões para agendamentos pendentes */}
                         {agendamento.status === 'agendado' && (
                           <>
                             <button
@@ -318,6 +336,17 @@ export function Agendamentos() {
                               <XCircle className="h-4 w-4" />
                             </button>
                           </>
+                        )}
+                        
+                        {/* Botão de deletar apenas para agendamentos finalizados */}
+                        {(agendamento.status === 'cancelado' || agendamento.status === 'concluido') && (
+                          <button
+                            onClick={() => handleDeletarAgendamento(agendamento)}
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir agendamento do histórico"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         )}
                       </div>
                     </div>

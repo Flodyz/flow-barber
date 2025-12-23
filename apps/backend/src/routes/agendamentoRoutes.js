@@ -20,5 +20,6 @@ router.get('/:id', AgendamentoController.buscarPorId);
 router.post('/', AgendamentoController.criar);
 router.put('/:id', AgendamentoController.atualizar);
 router.patch('/:id/cancelar', AgendamentoController.cancelar);
+router.delete('/:id', AgendamentoController.deletar);
 
 module.exports = router;
