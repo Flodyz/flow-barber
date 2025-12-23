@@ -311,7 +311,7 @@ export function Agendamentos() {
                         </button>
                         
                         {/* Botões para agendamentos pendentes */}
-                        {agendamento.status === 'agendado' && (
+                        {agendamento.status?.toLowerCase() === 'agendado' && (
                           <>
                             <button
                               onClick={() => handleAtualizarStatus(agendamento.id, 'concluido')}
@@ -331,7 +331,7 @@ export function Agendamentos() {
                         )}
                         
                         {/* Botão de deletar apenas para agendamentos finalizados */}
-                        {(agendamento.status === 'cancelado' || agendamento.status === 'concluido') && (
+                        {(agendamento.status?.toLowerCase() === 'cancelado' || agendamento.status?.toLowerCase() === 'concluido') && (
                           <button
                             onClick={() => handleDeletarAgendamento(agendamento)}
                             className="text-red-600 hover:text-red-700"
