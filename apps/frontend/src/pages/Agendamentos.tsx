@@ -258,7 +258,7 @@ export function Agendamentos() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {agendamentosFiltrados.map((agendamento) => {
-              const { date, time } = formatDateTime(agendamento.data_agendamento);
+              const dataFormatada = new Date(agendamento.data_agendamento + 'T00:00:00').toLocaleDateString('pt-BR');
               
               return (
                 <div key={agendamento.id} className="card">
@@ -275,7 +275,7 @@ export function Agendamentos() {
                             #{agendamento.id}
                           </h3>
                           <p className="text-sm text-silver-600">
-                            {date} às {time}
+                            {dataFormatada} às {agendamento.hora_inicio}
                           </p>
                         </div>
                       </div>
@@ -307,7 +307,7 @@ export function Agendamentos() {
 
                     <div className="flex items-center justify-between pt-4 border-t border-silver-300">
                       <span className="text-lg font-semibold text-green-600">
-                        R$ {(agendamento.servico?.preco || agendamento.preco || 0).toFixed(2)}
+                        R$ {(agendamento.valor_total || 0).toFixed(2)}
                       </span>
                       
                       <div className="flex space-x-2">
@@ -533,7 +533,7 @@ export function Agendamentos() {
                     <span className="text-sm text-silver-600">Serviço:</span>
                     <p className="text-primary-900">{selectedAgendamento.servico?.nome || selectedAgendamento.servico_nome}</p>
                     <p className="text-sm text-silver-700">
-                      R$ {(selectedAgendamento.servico?.preco || selectedAgendamento.preco || 0).toFixed(2)} - {selectedAgendamento.servico?.duracao || selectedAgendamento.duracao} min
+                      R$ {(selectedAgendamento.valor_total || 0).toFixed(2)} - {selectedAgendamento.servico?.duracao || selectedAgendamento.duracao} min
                     </p>
                   </div>
 
@@ -545,7 +545,7 @@ export function Agendamentos() {
                   <div>
                     <span className="text-sm text-silver-600">Data e Horário:</span>
                     <p className="text-primary-900">
-                      {formatDateTime(selectedAgendamento.data_agendamento).date} às {formatDateTime(selectedAgendamento.data_agendamento).time}
+                      {new Date(selectedAgendamento.data_agendamento + 'T00:00:00').toLocaleDateString('pt-BR')} às {selectedAgendamento.hora_inicio}
                     </p>
                   </div>
 

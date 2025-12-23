@@ -30,6 +30,8 @@ export function Clientes() {
       setLoading(true);
       // Limpar filtro ao recarregar
       setSearchTerm('');
+      // Limpar estado para forçar re-renderização
+      setClientes([]);
       const data = await clienteService.listar();
       setClientes(data);
     } catch (error) {

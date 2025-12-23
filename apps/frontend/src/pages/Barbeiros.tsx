@@ -32,6 +32,8 @@ export function Barbeiros() {
   const carregarBarbeiros = async () => {
     try {
       setLoading(true);
+      // Limpar estado para forçar re-renderização
+      setBarbeiros([]);
       const data = await barbeiroService.listar();
       setBarbeiros(data);
     } catch (error) {

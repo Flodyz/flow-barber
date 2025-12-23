@@ -32,6 +32,8 @@ export function Servicos() {
   const carregarServicos = async () => {
     try {
       setLoading(true);
+      // Limpar estado para forçar re-renderização
+      setServicos([]);
       const data = await servicoService.listar();
       setServicos(data);
     } catch (error) {
