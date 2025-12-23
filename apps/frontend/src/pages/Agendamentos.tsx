@@ -123,15 +123,6 @@ export function Agendamentos() {
     }
   };
 
-  // Formatação de data e hora
-  const formatDateTime = (dateTime: string) => {
-    const date = new Date(dateTime);
-    return {
-      date: date.toLocaleDateString('pt-BR'),
-      time: date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    };
-  };
-
   // Cores do status
   const getStatusColor = (status: string) => {
     switch (status) {
