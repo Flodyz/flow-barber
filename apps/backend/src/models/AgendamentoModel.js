@@ -347,6 +347,14 @@ class AgendamentoModel {
     }
   }
   
+  static async cancelar(id) {
+    return this.atualizarStatus(id, 'CANCELADO');
+  }
+  
+  static async concluir(id) {
+    return this.atualizarStatus(id, 'CONCLUIDO');
+  }
+  
   static async deletar(id) {
     try {
       await prisma.agendamento.delete({

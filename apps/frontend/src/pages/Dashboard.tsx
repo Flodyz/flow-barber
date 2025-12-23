@@ -67,11 +67,11 @@ export function Dashboard() {
       );
 
       const agendamentosConcluidos = agendamentos.filter(a => 
-        a.status === 'concluido' && a.data_agendamento >= inicioMes
+        a.status?.toLowerCase() === 'concluido' && a.data_agendamento >= inicioMes
       );
 
       const agendamentosCancelados = agendamentos.filter(a => 
-        a.status === 'cancelado' && a.data_agendamento >= inicioMes
+        a.status?.toLowerCase() === 'cancelado' && a.data_agendamento >= inicioMes
       );
 
       const faturamentoMensal = agendamentosConcluidos.reduce((total, agendamento) => 
@@ -79,7 +79,7 @@ export function Dashboard() {
       );
 
       const proximosAgendamentos = agendamentos
-        .filter(a => a.status === 'agendado' && a.data_agendamento >= hoje)
+        .filter(a => a.status?.toLowerCase() === 'agendado' && a.data_agendamento >= hoje)
         .sort((a, b) => new Date(a.data_agendamento).getTime() - new Date(b.data_agendamento).getTime())
         .slice(0, 5);
 
