@@ -41,15 +41,37 @@ class AgendamentoController {
         });
       }
       
+      // Buscar serviço para calcular hora_fim
+      const prisma = require('../database/prisma');
+      const servico = await prisma.servico.findUnique({
+        where: { id: parseInt(servico_id) }
+      });
+      
+      if (!servico) {
+        return res.status(404).json({
+          error: 'Serviço não encontrado',
+          message: 'O serviço selecionado não existe'
+        });
+      }
+      
+      // Calcular hora_fim
+      const [horas, minutos] = hora_inicio.split(':').map(Number);
+      const inicioMinutos = horas * 60 + minutos;
+      const fimMinutos = inicioMinutos + servico.duracao;
+      
+      const horaFim = Math.floor(fimMinutos / 60);
+      const minutoFim = fimMinutos % 60;
+      const hora_fim = `${horaFim.toString().padStart(2, '0')}:${minutoFim.toString().padStart(2, '0')}`;
+      
       // Verificar disponibilidade
-      const disponibilidade = await AgendamentoModel.verificarDisponibilidade(
+      const disponivel = await AgendamentoModel.verificarDisponibilidade(
         barbeiro_id, 
         data_agendamento, 
         hora_inicio, 
-        servico_id
+        hora_fim
       );
       
-      if (!disponibilidade.disponivel) {
+      if (!disponivel) {
         return res.status(409).json({
           error: 'Horário não disponível',
           message: 'O barbeiro já possui agendamento neste horário'
@@ -275,16 +297,38 @@ class AgendamentoController {
         });
       }
       
-      const disponibilidade = await AgendamentoModel.verificarDisponibilidade(
+      // Buscar serviço para calcular hora_fim
+      const prisma = require('../database/prisma');
+      const servico = await prisma.servico.findUnique({
+        where: { id: parseInt(servico_id) }
+      });
+      
+      if (!servico) {
+        return res.status(404).json({
+          error: 'Serviço não encontrado',
+          message: 'O serviço selecionado não existe'
+        });
+      }
+      
+      // Calcular hora_fim
+      const [horas, minutos] = hora_inicio.split(':').map(Number);
+      const inicioMinutos = horas * 60 + minutos;
+      const fimMinutos = inicioMinutos + servico.duracao;
+      
+      const horaFim = Math.floor(fimMinutos / 60);
+      const minutoFim = fimMinutos % 60;
+      const hora_fim = `${horaFim.toString().padStart(2, '0')}:${minutoFim.toString().padStart(2, '0')}`;
+      
+      const disponivel = await AgendamentoModel.verificarDisponibilidade(
         barbeiro_id,
         data,
         hora_inicio,
-        servico_id
+        hora_fim
       );
       
       res.json({
         success: true,
-        data: disponibilidade
+        data: { disponivel }
       });
       
     } catch (error) {

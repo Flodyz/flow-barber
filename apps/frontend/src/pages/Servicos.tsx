@@ -79,9 +79,10 @@ export function Servicos() {
         toast.success('Serviço criado com sucesso!');
       }
       
+      // Recarregar dados antes de fechar o modal
+      await carregarServicos();
       setShowModal(false);
       reset();
-      carregarServicos();
     } catch (error: any) {
       console.error('Erro ao salvar serviço:', error);
       const message = error.response?.data?.message || 'Erro ao salvar serviço';

@@ -93,11 +93,16 @@ class ServicoModel {
         data: updateData
       });
 
+      // Retornar dados completos atualizados
       return { 
         id: servico.id,
         nome: servico.nome,
+        descricao: servico.descricao,
         preco: parseFloat(servico.preco),
         duracao: servico.duracao,
+        ativo: servico.ativo,
+        created_at: servico.createdAt ? servico.createdAt.toISOString() : null,
+        updated_at: servico.updatedAt ? servico.updatedAt.toISOString() : null,
         changes: 1
       };
     } catch (error) {

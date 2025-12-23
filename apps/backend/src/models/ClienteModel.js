@@ -113,7 +113,20 @@ class ClienteModel {
         }
       });
 
-      return { id: cliente.id, ...clienteData, changes: 1 };
+      // Retornar dados completos atualizados
+      return {
+        id: cliente.id,
+        nome: cliente.nome,
+        telefone: cliente.telefone,
+        email: cliente.email,
+        data_nascimento: cliente.dataNascimento ? cliente.dataNascimento.toISOString().split('T')[0] : null,
+        endereco: cliente.endereco,
+        observacoes: cliente.observacoes,
+        ativo: cliente.ativo,
+        created_at: cliente.createdAt ? cliente.createdAt.toISOString() : null,
+        updated_at: cliente.updatedAt ? cliente.updatedAt.toISOString() : null,
+        changes: 1
+      };
     } catch (error) {
       if (error.code === 'P2025') {
         return { id, changes: 0 };

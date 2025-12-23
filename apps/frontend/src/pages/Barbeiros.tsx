@@ -81,9 +81,10 @@ export function Barbeiros() {
         toast.success('Barbeiro criado com sucesso!');
       }
       
+      // Recarregar dados antes de fechar o modal
+      await carregarBarbeiros();
       setShowModal(false);
       reset();
-      carregarBarbeiros();
     } catch (error: any) {
       console.error('Erro ao salvar barbeiro:', error);
       const message = error.response?.data?.message || 'Erro ao salvar barbeiro';

@@ -28,6 +28,8 @@ export function Clientes() {
   const carregarClientes = async () => {
     try {
       setLoading(true);
+      // Limpar filtro ao recarregar
+      setSearchTerm('');
       const data = await clienteService.listar();
       setClientes(data);
     } catch (error) {
@@ -87,9 +89,10 @@ export function Clientes() {
         toast.success('Cliente criado com sucesso!');
       }
       
+      // Recarregar dados antes de fechar o modal
+      await carregarClientes();
       setShowModal(false);
       reset();
-      carregarClientes();
     } catch (error: any) {
       console.error('Erro ao salvar cliente:', error);
       const message = error.response?.data?.message || 'Erro ao salvar cliente';

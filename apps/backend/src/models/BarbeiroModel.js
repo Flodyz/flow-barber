@@ -274,8 +274,9 @@ class BarbeiroModel {
       });
       
       // Atualizar usuário se nome, email ou ativo foram fornecidos
+      let usuario = null;
       if (nome || email || ativo !== undefined) {
-        await prisma.usuario.update({
+        usuario = await prisma.usuario.update({
           where: { id: barbeiroExistente.usuarioId },
           data: {
             ...(nome && { nome }),
@@ -283,9 +284,29 @@ class BarbeiroModel {
             ...(ativo !== undefined && { ativo })
           }
         });
+      } else {
+        // Buscar dados do usuário se não foi atualizado
+        usuario = await prisma.usuario.findUnique({
+          where: { id: barbeiroExistente.usuarioId }
+        });
       }
 
-      return { id: barbeiro.id, ...barbeiroData, changes: 1 };
+      // Retornar dados completos atualizados
+      return { 
+        id: barbeiro.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        telefone: barbeiro.telefone,
+        especialidades: barbeiro.especialidades,
+        horario_inicio: barbeiro.horarioInicio,
+        horario_fim: barbeiro.horarioFim,
+        dias_trabalho: barbeiro.diasTrabalho,
+        ativo: usuario.ativo,
+        usuario_id: barbeiro.usuarioId,
+        created_at: barbeiro.createdAt ? barbeiro.createdAt.toISOString() : null,
+        updated_at: barbeiro.updatedAt ? barbeiro.updatedAt.toISOString() : null,
+        changes: 1
+      };
     } catch (error) {
       if (error.code === 'P2025') {
         return { id, changes: 0 };

@@ -112,9 +112,10 @@ export function Agendamentos() {
     try {
       await agendamentoService.criar(data);
       toast.success('Agendamento criado com sucesso!');
+      // Recarregar dados antes de fechar o modal
+      await carregarDados();
       setShowModal(false);
       reset();
-      carregarDados();
     } catch (error: any) {
       console.error('Erro ao criar agendamento:', error);
       const message = error.response?.data?.message || 'Erro ao criar agendamento';
